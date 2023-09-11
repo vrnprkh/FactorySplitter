@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generate Tree</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  label {
+    font-size: 18px;
+  }
+  input {
+    width: 80px;
+    font-size: 16px;
+    padding: 5px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  #outputBox {
+    width: calc(33.33% - 20px); /* Maximum width for the output box */
+    max-height: 300px; /* Set a maximum height, change as needed */
+    overflow-y: auto; /* Add vertical scrollbar if content exceeds max height */
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: flex;
+    align-items: flex-start; /* Align content at the top */
+    font-size: 18px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <label for="inputN">n:</label>
+  <input type="number" id="inputN" value="2">
+  <br>
+  <label for="inputMaxSplit">maxSplit:</label>
+  <input type="number" id="inputMaxSplit" value="2">
+  <div id="outputBox"></div>
+  <button id="calculateBtn">Calculate</button>
+</div>
+<script src="logistics.js"></script>
+<script>
+  const inputN = document.getElementById("inputN");
+  const inputMaxSplit = document.getElementById("inputMaxSplit");
+  const outputBox = document.getElementById("outputBox");
+  const calculateBtn = document.getElementById("calculateBtn");
+
+  calculateBtn.addEventListener("click", () => {
+    const n = parseInt(inputN.value);
+    const maxSplit = parseInt(inputMaxSplit.value);
+    const result = generateTree(n, maxSplit);
+    outputBox.innerHTML = result;
+  });
+</script>
+</body>
+</html>

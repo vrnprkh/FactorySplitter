@@ -36,48 +36,46 @@ class Node:
       current = current.parents[0]
     return False
   
+  def addChild(self, value):
+    self.children.append(Node(self.max_split, self.max_merge, value, self))
+
+  def trySpliting(self):
+    for i in reversed(range(self.max_split - 1)):
+      if self.mathValue % (i + 2) == 0:
+        for j in range(i + 2):
+          if self.mathValue // (i + 2) == 1:
+            if not self.fillNeedy():
+              self.addChild(self.mathValue // (i + 2))
+          else:
+            self.addChild(self.mathValue // (i + 2))
+        for child in self.children:
+          child.split()
+        return True
+    return False
+  
   def split(self):
     if self.mathValue == 1:
       return
     if self.beenSplit:
       return
     self.beenSplit = True
-    for i in reversed(range(self.max_split - 1)):
-      if self.mathValue % (i + 2) == 0:
-        for j in range(i + 2):
-          if self.mathValue // (i + 2) == 1:
-            if not self.fillNeedy():
-              self.children.append(Node(self.max_split, self.max_merge, self.mathValue // (i + 2), self))
-          else:
-            self.children.append(Node(self.max_split, self.max_merge, self.mathValue // (i + 2), self))
-        for child in self.children:
-          child.split()
-        return
+    if self.trySpliting():
+      return
     # it is not splitable nicely so we add 1
     self.mathValue += 1
     # create new parent
     newParent = Node(self.max_split, self.max_merge, self.mathValue, self.parents[0], True)
     newParent.beenSplit = True
-    
     # replace child from parent
-    if self.parents[0]:
+    if self.parents[0]: # ensure it is not None
       for i, child in enumerate(self.parents[0].children):
         if child == self:
           self.parents[0].children[i] = newParent
+
     newParent.children.append(self)
     self.parents[0] = newParent
-  
-    for i in reversed(range(self.max_split - 1)):
-      if self.mathValue % (i + 2) == 0:
-        for j in range(i + 2):
-          if self.mathValue // (i + 2) == 1:
-            if not self.fillNeedy():
-              self.children.append(Node(self.max_split, self.max_merge, self.mathValue // (i + 2), self))
-          else:
-            self.children.append(Node(self.max_split, self.max_merge, self.mathValue // (i + 2), self))
-        for child in self.children:
-          child.split()
-        return
+
+    assert self.trySpliting() # this should always succeed, assert incase it does not.
 
   def getDigraphLabel(self):
     if self.parents[0] == None:
@@ -98,12 +96,17 @@ class Node:
       connections.append(str(self.id) + '->' + str(child.id) + '[label="' + str(self.mathValue // len(self.children)) + '"];\n')
     return connections
   
+
 def createTree(n, maxSplit, maxMerge):
   Node.count = 0
   headNode = Node(maxSplit, maxMerge, n)
   headNode.children.append(Node(maxSplit, maxMerge, n, headNode))
   headNode.children[0].split()
   return headNode
+
+
+
+
 
 def getAllLabelsAndConnects(node, explored, labels, connections):
   if node in explored:
@@ -125,13 +128,13 @@ def drawTree(root):
 
   getAllLabelsAndConnects(root, explored, labels, connections)
   for e in labels:
-
     graphvizString += e
   for e in connections:
     graphvizString += e
   
   graphvizString += "}"
   print(graphvizString)
+
 
 tree = createTree(11, 3, 3)
 drawTree(tree)
